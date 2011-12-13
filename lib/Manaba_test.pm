@@ -56,6 +56,9 @@ sub update {
 
     my $scraper = $SCRAPERS->{ $site_name };
     return unless $scraper;
+
+    my $site = $CONFIG->{site};
+    return unless $site;
 }
 
 sub load_manaba {
