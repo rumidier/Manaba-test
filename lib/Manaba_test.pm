@@ -63,7 +63,13 @@ sub update {
     my $site = $CONFIG->{site};
     return unless $site;
 
+    my $start_url = sprintf(
+    $site->{ $site_name }{ 'start_url' },
+    $webtoon->{$id}{ 'code' },
+    );
 
+    my $items = $scraper->scrape( URI->new( $start_url ))->{items};
+    my @links = map { $_->{link} } @$items;
 }
 
 sub load_manaba {
