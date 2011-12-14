@@ -5,6 +5,7 @@ our $VERSION = '0.1';
 
 use 5.010;
 use YAML::Tiny;
+use Web::Scraper;
 use Data::Dumper;
 
 my $CONFIG;
@@ -21,8 +22,8 @@ my $SCRAPERS = {
     },
     naver => scraper {
         process(
-                'table.viewList tr td.tilte',
-                'imtes[]',
+            'table.viewList tr td.tilte',
+            'itmes[]',
             scraper {
                 process 'a', link => '@href';
             }
@@ -30,15 +31,17 @@ my $SCRAPERS = {
     },
     nate => scraper {
         process(
-                'div.wrap_carousel div.thumbPage div.thumbSet dd',
-                'imtes[]',
+            'div.wrap_carousel div.thumbPage div.thumbSet dd',
+            'itmes[]',
             scraper {
                 process 'a',   link  => '@href';
                 process 'img', title => '@alt';
             }
        );
-    },
+    }
 };
+
+
 
 get '/' => sub {
     template 'index';
@@ -59,6 +62,8 @@ sub update {
 
     my $site = $CONFIG->{site};
     return unless $site;
+
+
 }
 
 sub load_manaba {
