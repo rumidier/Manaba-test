@@ -45,7 +45,33 @@ my $SCRAPERS = {
 
 
 get '/' => sub {
-    template 'index';
+    my $webtoon = $CONFIG->{webtoon};
+
+    my @item = map {
+        my $item = $webtoon->{$_};
+
+        $item->{id}     = $_;
+        $item->{first}  = q{} unless $item->{first};
+        $item->{last}   = q{} unless $item->{last};
+
+        $item;
+    } sort keys %$webtoon;
+
+    my $ptr = 0;
+    my @rows;
+    while ( $items[$ptr] ) {
+        my @cols;
+        for my $i ( 0 .. 9 ) {
+            last unless $items[$ptr];
+            push @cols, $items[$ptr];
+            ++$ptr;
+        }
+        push @rows, \@cols;
+    }
+
+    template 'index' => {
+        rows => \@rows,
+    };
 };
 
 sub update {
