@@ -118,9 +118,9 @@ sub update {
     my @links = map { $_->{link} } @$items;
 
     given ( $site_name ) {
-#        update_daum_link($id, @links)  when 'daum';
+        update_daum_link($id, @links)  when 'daum';
         update_naver_link($id, @links) when 'naver';
-#        update_nate_link($id, @links)  when 'nate';
+        update_nate_link($id, @links)  when 'nate';
     }
 }
 
@@ -162,6 +162,62 @@ sub update_naver_link {
     } @links;
 
     $webtoon->{$id}{first} = sprintf( $webtoon_url, $webtoon->{$id}{code}, 1);
+    $webtoon->{$id}{last}  = sprintf( $webtoon_url, $webtoon->{$id}{code}, $chapters[-1] );
+}
+
+sub update_daum_link {
+    my ( $id, @links ) = @_;
+
+    my $webtoon = $CONFIG->{webtoon};
+    return unless $webtoon;
+
+    my $site = $CONFIG->{site};
+    return unless $site;
+
+    my $webtoon_url = $site->{ $webtoon->{$id}{site} }{webtoon_url};
+    return unless $webtoon_url;
+
+    my @chapters = sort {
+        my $page_no_a = 0;
+        my $page_no_b = 0;
+
+        $page_no_a = $1 if $a =~ m/^(\d+)$/;
+        $page_no_b = $1 if $b =~ m/^(\d+)$/;
+
+        $page_no_a <=> $page_no_b;
+    } map {
+        m{viewer/(\d+)$};
+    } @links;
+
+    $webtoon->{$id}{first} = sprintf( $webtoon_url, $chapters[0] );
+    $webtoon->{$id}{last}  = sprintf( $webtoon_url, $chapters[-1] );
+}
+
+sub update_nate_link {
+    my ( $id, @links ) = @_;
+
+    my $webtoon = $CONFIG->{webtoon};
+    return unless $webtoon;
+
+    my $site = $CONFIG->{site};
+    return unless $site;
+
+    my $webtoon_url = $site->{ $webtoon->{$id}{site} }{webtoon_url};
+    return unless $webtoon_url;
+
+    my @chapters = sort {
+        my $page_no_a = 0;
+        my $page_no_b = 0;
+
+        $page_no_a = $1 if $a =~ m/^(\d+)$/;
+        $page_no_b = $1 if $b =~ m/^(\d+)$/;
+
+        $page_no_a <=> $page_no_b;
+    } map {
+        m{bsno=(\d+)$};
+    } @links;
+
+    $webtoon->{$id}{first} = sprintf( $webtoon_url, $webtoon->{$id}{code}, $chapters[0] );
     $webtoon->{$id}{last}  = sprintf( $webtoon_url, $webtoon->{$id}{code}, $chapters[-1] );
 }
 
