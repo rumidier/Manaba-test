@@ -6,6 +6,7 @@ our $VERSION = '0.1';
 use 5.010;
 use YAML::Tiny;
 use Web::Scraper;
+use URI;
 use Data::Dumper;
 
 my $CONFIG;
@@ -22,8 +23,8 @@ my $SCRAPERS = {
     },
     naver => scraper {
         process(
-            'table.viewList tr td.tilte',
-            'itmes[]',
+            'table.viewList tr td.title',
+            'items[]',
             scraper {
                 process 'a', link => '@href';
             }
@@ -32,7 +33,7 @@ my $SCRAPERS = {
     nate => scraper {
         process(
             'div.wrap_carousel div.thumbPage div.thumbSet dd',
-            'itmes[]',
+            'items[]',
             scraper {
                 process 'a',   link  => '@href';
                 process 'img', title => '@alt';
@@ -64,12 +65,15 @@ sub update {
     return unless $site;
 
     my $start_url = sprintf(
-    $site->{ $site_name }{ 'start_url' },
-    $webtoon->{$id}{ 'code' },
+        $site->{ $site_name }{ 'start_url' },
+        $webtoon->{$id}{ 'code' },
     );
 
-    my $items = $scraper->scrape( URI->new( $start_url ))->{items};
+    my $items = $scraper->scrape( URI->new( $start_url ) )->{items};
     my @links = map { $_->{link} } @$items;
+
+    given ( $site_name ) {
+    }
 }
 
 sub load_manaba {
@@ -78,6 +82,6 @@ sub load_manaba {
 }
 
 load_manaba();
-update('noblesse');
+update('tal');
 
 true;
