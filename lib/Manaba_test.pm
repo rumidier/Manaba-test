@@ -95,6 +95,21 @@ sub update_naver_link {
 
     my $webtoon_url = $site->{ $webtoon->{$id}{site} }{webtoon_url};
     return unless $webtoon_url;
+
+    my @chapters = sort {
+        my $page_no_a = 0;
+        my $page_no_b = 0;
+
+        $page_no_a = $1 if $a =~ m/^(\d+)$/;
+        $page_no_b = $1 if $b =~ m/^(\d+)$/;
+
+        $page_no_a <=> $page_no_b;
+    } map {
+        m{no=(\d+)};
+    } @links;
+
+    $webtoon->{$id}{first} = sprintf( $webtoon_url, $webtoon->{$id}{code}, 1);
+    $webtoon->{$id}{last}  = sprintf( $webtoon_url, $webtoon->{$id}{code}, $chapters[-1] );
 }
 
 load_manaba();
