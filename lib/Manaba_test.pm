@@ -84,6 +84,19 @@ sub load_manaba {
     $CONFIG = $yaml->[0];
 }
 
+sub update_naver_link {
+    my ( $id, @links ) = @_;
+
+    my $webtoon = $CONFIG->{webtoon};
+    return unless $webtoon;
+
+    my $site = $CONFIG->{site};
+    return unless $site;
+
+    my $webtoon_url = $site->{ $webtoon->{$id}{site} }{webtoon_url};
+    return unless $webtoon_url;
+}
+
 load_manaba();
 update('tal');
 
