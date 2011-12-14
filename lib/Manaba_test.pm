@@ -4,12 +4,20 @@ use Dancer ':syntax';
 our $VERSION = '0.1';
 
 use 5.010;
+use File::Path qw( make_path );
+use File::Slurp;
 use YAML::Tiny;
 use Web::Scraper;
 use URI;
 use Data::Dumper;
 
 my $CONFIG;
+my $ua = Web::Scraper::user_agent;
+$ua->agent(
+        'Mozilla/5.0'
+        . ' (Windows; U; Windows NT 6.1; en-US; rv:1.9.2b1)'
+        . 'Gecko/20091014 Firefox/3.6b1 GTB5'
+);
 my $SCRAPERS = {
     daum => scraper {
         process(
@@ -157,7 +165,29 @@ sub update_naver_link {
     $webtoon->{$id}{last}  = sprintf( $webtoon_url, $webtoon->{$id}{code}, $chapters[-1] );
 }
 
+sub fetch_webtoon_image {
+    my $ua = Web::Scraper::user_agent;
+    return unless $ua;
+
+    return unless $CONFIG;
+
+    my $webtoons = $CONFIG->{webtoon};
+    return unless $webtoons;
+
+    make_path('public/images/webtoon');
+    for my $id ( keys %$webtoons ) {
+        my $file = "public/images/webtoon/$id";
+        next if -f $file;
+
+        my $response = $ua->get( $webtoons->{$id}{image} );
+        if ($response->is_success) {
+            write_file( $file, $response->content );
+        }
+    }
+}
+
 load_manaba();
+fetch_webtoon_image();
 update();
 
 true;
