@@ -42,12 +42,10 @@ my $SCRAPERS = {
     }
 };
 
-
-
 get '/' => sub {
     my $webtoon = $CONFIG->{webtoon};
 
-    my @item = map {
+    my @items = map {
         my $item = $webtoon->{$_};
 
         $item->{id}     = $_;
@@ -72,6 +70,19 @@ get '/' => sub {
     template 'index' => {
         rows => \@rows,
     };
+};
+
+get '/update/:id?' => sub {
+    my $id = param( 'id' );
+
+    if ($id) {
+        update($id);
+    }
+    else {
+        update_all();
+    }
+
+    redirect '/';
 };
 
 sub update {
@@ -102,6 +113,14 @@ sub update {
 #        update_daum_link($id, @links)  when 'daum';
         update_naver_link($id, @links) when 'naver';
 #        update_nate_link($id, @links)  when 'nate';
+    }
+}
+
+sub update_all {
+    my $webtoons = $CONFIG->{webtoon};
+
+    for my $id ( keys %$webtoons ) {
+        update($id);
     }
 }
 
@@ -139,6 +158,6 @@ sub update_naver_link {
 }
 
 load_manaba();
-update('tal');
+update();
 
 true;
