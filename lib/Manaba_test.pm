@@ -73,6 +73,9 @@ sub update {
     my @links = map { $_->{link} } @$items;
 
     given ( $site_name ) {
+#        update_daum_link($id, @links)  when 'daum';
+        update_naver_link($id, @links) when 'naver';
+#        update_nate_link($id, @links)  when 'nate';
     }
 }
 
