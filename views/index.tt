@@ -1,10 +1,12 @@
-<a href="[% request.uri_base %]/update/"> ---update--- </a>
+<a href="[% request.uri_base %]/update/"> all update</a>
+<br />
 [% FOR cols IN rows %]
     [% FOR item IN cols %]
-        [% IF item.last %]<a href="[% item.last | html %]"> 갱신전 최신 [% END %]
-	[% IF item.last %] 갱신 최신</a> [% END %]
-        [% IF item.first %]<a href="[% item.first | html %]"> 갱신전 첫화보기 [% END %]
-        [% IF item.first %]갱신 첫화보기</a> [% END %]
+        [% IF item.last %]<a href="[% item.last | html %]"> [% END %]
+	<img class="rounded" src="[% request_uri_base _ '/images/webtoon/' _ item.id | html %]">
+	[% IF item.last %] </a> [% END %]
+        [% IF item.first %]<a href="[% item.first | html %]">[% END %]
+        [% IF item.first %] 1화 </a>[% END %]
 	<a href="[% request.uri_base _ '/update/' _ item.id %]">개별 Update</a>
     [% END %]
 [% END %]
